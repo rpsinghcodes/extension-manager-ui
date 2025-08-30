@@ -1,7 +1,4 @@
 import React, { useMemo, useState } from "react";
-import logo from "./assets/images/logo.svg";
-import moon from "./assets/images/icon-moon.svg";
-import sun from "./assets/images/icon-sun.svg";
 import Extension from "./Extension";
 import data from "./data.json";
 
@@ -9,7 +6,7 @@ const DARK = "dark";
 const LIGHT = "light";
 
 function App() {
-	const [theme, setTheme] = useState(DARK);
+	const [theme, setTheme] = useState(LIGHT);
 	const isAvailable = useMemo(
 		() => data.filter((item) => item.isActive === true),
 		[]
@@ -20,7 +17,7 @@ function App() {
 	);
 	const isDark = theme === DARK;
 	const textColor = theme === DARK ? "text-white" : "text-neutral-900";
-	const [selectedExtension, setSelectedExtension] = useState("isAvailable");
+	const [selectedExtension, setSelectedExtension] = useState("all");
 	const [filteredData, setFilteredData] = useState({
 		isAvailable,
 		notAvailable,
@@ -100,96 +97,98 @@ function App() {
 	};
 
 	return (
-		<>
+		<div
+			className={`${
+				theme === DARK
+					? "bg-[linear-gradient(180deg,#040918_0%,#091540_100%)] "
+					: "bg-[linear-gradient(180deg,#ebf2fc_0%,#eef8f9_100%)] "
+			}  p-10 min-h-[100vh]`}
+		>
 			<div
-				className={`${
-					theme === DARK
-						? "bg-[linear-gradient(180deg,#040918_0%,#091540_100%)] "
-						: "bg-[linear-gradient(180deg,#ebf2fc_0%,#eef8f9_100%)] "
-				}  w-full p-10`}
+				className={`w-full flex justify-between items-center ${
+					isDark ? "bg-neutral-800" : "bg-white"
+				} rounded-2xl p-3`}
 			>
-				<div
-					className={`w-full flex justify-between items-center ${
-						isDark ? "bg-neutral-800" : "bg-white"
-					} rounded-2xl p-3`}
+				<div className='h-[30px]'>
+					<img
+						src='images/logo.svg'
+						alt='logo'
+						className={`size-full ${theme === DARK ? "fill-white" : ""}`}
+					/>
+				</div>
+				<button
+					onClick={() =>
+						setTheme((prev) => {
+							return prev === DARK ? LIGHT : DARK;
+						})
+					}
 				>
-					<div className='h-[30px]'>
+					<div>
 						<img
-							src={logo}
-							alt='logo'
-							className={`size-full ${theme === DARK ? "fill-white" : ""}`}
+							src={
+								theme === DARK ? "images/icon-sun.svg" : "images/icon-moon.svg"
+							}
+							className={`size-full ${
+								isDark
+									? "bg-[hsl(226,11%,37%)] hover:bg-[hsl(0,0%,78%)]"
+									: "hover:bg-[hsl(226,11%,37%)] bg-[hsl(0,0%,78%)]"
+							} p-3 rounded-xl transition-all`}
+							alt='moon-logo'
 						/>
 					</div>
+				</button>
+			</div>
+			{/* Extensions list nav */}
+			<div className='flex flex-col  justify-between items-center mt-12 mb-8 md:flex-row'>
+				<h1 className={`${textColor} text-3xl font-bold mb-4 md:mb-0`}>
+					Extensions List
+				</h1>
+				<div className='flex gap-3 '>
 					<button
-						onClick={() =>
-							setTheme((prev) => {
-								return prev === DARK ? LIGHT : DARK;
-							})
-						}
+						onClick={() => {
+							setSelectedExtension("all");
+						}}
+						className={handleButtonStyle("all")}
 					>
-						<div>
-							<img
-								src={theme === DARK ? sun : moon}
-								className={`size-full ${
-									isDark
-										? "bg-[hsl(226,11%,37%)] hover:bg-[hsl(0,0%,78%)]"
-										: "hover:bg-[hsl(226,11%,37%)] bg-[hsl(0,0%,78%)]"
-								} p-3 rounded-xl transition-all`}
-								alt='moon-logo'
-							/>
-						</div>
+						All
+					</button>
+					<button
+						onClick={() => {
+							setSelectedExtension("isAvailable");
+						}}
+						className={handleButtonStyle("isAvailable")}
+					>
+						Active
+					</button>
+					<button
+						onClick={() => {
+							setSelectedExtension("notAvailable");
+						}}
+						className={handleButtonStyle("notAvailable")}
+					>
+						Inactive
 					</button>
 				</div>
-				{/* Extensions list nav */}
-				<div className='flex flex-col justify-between items-center mt-12 mb-8 md:flex-col'>
-					<h1 className={`${textColor} text-3xl font-bold`}>Extensions List</h1>
-					<div className='flex gap-3 '>
-						<button
-							onClick={() => {
-								setSelectedExtension("all");
-							}}
-							className={handleButtonStyle("all")}
-						>
-							All
-						</button>
-						<button
-							onClick={() => {
-								setSelectedExtension("isAvailable");
-							}}
-							className={handleButtonStyle("isAvailable")}
-						>
-							Active
-						</button>
-						<button
-							onClick={() => {
-								setSelectedExtension("notAvailable");
-							}}
-							className={handleButtonStyle("notAvailable")}
-						>
-							Inactive
-						</button>
-					</div>
-				</div>
-
-				{/* Extensions */}
-				<div className='flex flex-wrap  gap-4 '>
-					{filteredData[selectedExtension].map(
-						({ logo, description, name, isActive }) => (
-							<Extension
-								key={name}
-								image={`../src/${logo}`}
-								description={description}
-								name={name}
-								isDark={isDark}
-								active={isActive}
-								onStatusChange={(args) => handleAvailability(args)}
-								handleRemove={(args) => removeExtension(args)}
-							/>
-						)
-					)}
-				</div>
 			</div>
-		</>
+
+			{/* Extensions */}
+			<div className='grid grid-cols-1 md:grid-cols-3 gap-4 items-center justify-items-center  max-w-[1300px] mx-auto'>
+				{filteredData[selectedExtension].map(
+					({ logo, description, name, isActive }) => (
+						<Extension
+							key={name}
+							image={logo}
+							description={description}
+							name={name}
+							isDark={isDark}
+							active={isActive}
+							onStatusChange={(args) => handleAvailability(args)}
+							handleRemove={(args) => removeExtension(args)}
+						/>
+					)
+				)}
+			</div>
+		</div>
 	);
 }
 

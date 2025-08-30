@@ -13,13 +13,13 @@ export default function Extension({
 		<div
 			className={`p-3 ${
 				isDark ? "bg-neutral-700 text-white" : "bg-white"
-			} rounded-2xl outline outline-neutral-600 w-[400px]`}
+			} rounded-2xl outline outline-neutral-600 max-w-[400px]`}
 		>
 			<div className='flex flex-row gap-3'>
 				<img src={image} alt='extension-icon' />
 				<div className=''>
-					<h2 className='text-lg font-bold'>{name}</h2>
-					<p className={`${isDark ? "text-neutral-300 " : "text-neutral-600"}`}>
+					<h2 className='md:text-lg font-bold'>{name}</h2>
+					<p className={`${isDark ? "text-neutral-300 " : "text-neutral-600"} text-sm md:text-[16px]`}>
 						{description}
 					</p>
 				</div>
